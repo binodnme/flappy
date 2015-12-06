@@ -1,0 +1,29 @@
+*{
+    margin: 0px;
+    padding: 0px;
+}
+
+.main-container{
+    width: 800px;
+    height: 300px;
+    border: 2px solid red;
+    margin: 15px auto;
+    overflow: hidden;
+    position: relative;
+}
+
+.bg-container{
+    width: 10000px;
+    height: 300px;
+    border: 2px solid blue;
+    background: url(../images/bg.png) repeat-x;
+}
+
+.hero{
+    width: 30px;
+    height: 30px;
+    background: green;
+    position: absolute;
+    top: 45%;
+    left: 10%;
+}
