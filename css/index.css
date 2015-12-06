@@ -16,14 +16,37 @@
     width: 10000px;
     height: 300px;
     border: 2px solid blue;
-    background: url(../images/bg.png) repeat-x;
+    background: url(../images/background.png) repeat-x;
 }
 
 .hero{
-    width: 30px;
-    height: 30px;
-    background: green;
+    width: 100px;
+    height: 100px;
+    background: url(../images/flappy1.gif);
+    background-position: 50% 50%;
     position: absolute;
     top: 45%;
     left: 10%;
 }
+
+.pipe{
+    background: red;
+    position: absolute;
+}
+
+/*
+.pipe-long{
+    width: 30px;
+    height: 150px;
+    background: blue;
+    position: absolute;
+    left: 900;
+}
+
+.pipe-short{
+    width: 30px;
+    height: 50px;
+    background: blue;
+    position: absolute;
+    left: 900;
+}*/

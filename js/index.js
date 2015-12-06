@@ -3,18 +3,21 @@ var pipes = [];
 var mainContainer = document.getElementsByClassName('main-container')[0];
 var bgContainer = document.getElementsByClassName('bg-container')[0];
 
-var hero = document.getElementsByClassName('hero')[0];
-var heroStyle = window.getComputedStyle(hero);
-var heroTop = parseInt(heroStyle.getPropertyValue('top'));
-var heroLeft = parseInt(heroStyle.getPropertyValue('left'));
-var heroHeight = parseInt(heroStyle.getPropertyValue('height'));
-var heroWidth = parseInt(heroStyle.getPropertyValue('width'));
-var maxWidth = 900-heroWidth;
-var maxHeight = 300-heroHeight;
+var hero = new Box();
+hero.addClass('hero');
+hero.setPos(100,140);
+hero.setDimension(30,30);
+hero.appendTo(mainContainer);
+
+var actualWidth = 900;
+var actualHeight = 300;
+var maxWidth = 900-hero.width;
+var maxHeight = 300-hero.height;
 
 var pipeCreateId;
 
 var gravity = 1;
+
 
 var intervalId = window.setInterval(function(){
     
@@ -22,44 +25,36 @@ var intervalId = window.setInterval(function(){
     marginLeft-=5;
     bgContainer.style['marginLeft']=marginLeft+'px';
     
-    
     //move pipes
-    for(pipeIndex in pipes){
-        var style = window.getComputedStyle(pipes[pipeIndex]);
+    for(var pipeIndex in pipes){                        
         
-        var pipeLeft = parseInt(style.getPropertyValue('left'));
-        if(pipeLeft<=0){
-            pipes[pipeIndex].remove();
+        if(pipes[pipeIndex].x<=0){
+            pipes[pipeIndex].element.remove();
 //            pipes.splice(pipeIndex,1);
         }else{
-            pipes[pipeIndex].style['left'] = (pipeLeft - 5) +'px';
-        }                            
-        
+            pipes[pipeIndex].x -=5;
+            pipes[pipeIndex].element.style['left'] = pipes[pipeIndex].x +'px';
+        }
     }
     
     //check ground collision
-    if(heroTop<maxHeight){
-        heroTop+=5;
-        hero.style['top'] = heroTop+'px';
-        if(heroTop>=maxHeight){
-            var newDiv = document.createElement('div');
-            newDiv.style['width'] = '300px';
-            newDiv.style['height'] = '100px';
-            newDiv.style['background'] = 'red'
-            newDiv.innerHTML = "OUT";
-            newDiv.style['position'] = 'absolute';
-            newDiv.style['top'] = (300/2 - 100/2) +'px';
-            newDiv.style['left'] = (800/2-300/2) +'px';
-            mainContainer.appendChild(newDiv);
-            
-            window.clearInterval(intervalId);
-            window.clearInterval(pipeCreateId);
+    if(hero.y<maxHeight){
+        hero.y+=5;
+        hero.element.style['top'] = hero.y+'px';
+        if(hero.y>=maxHeight){
+            dead();
         }
     }
     
     
     //check pipe collison
-    
+    for(var pipe in pipes){
+        if((pipes[pipe].x + pipes[pipe].width) > hero.x){
+            if(hero.hitTest(pipes[pipe])){
+                dead();
+            }
+        }
+    }
     
     //check end point
     if(marginLeft==-5000){
@@ -71,39 +66,34 @@ var intervalId = window.setInterval(function(){
 
 var count=0;
 var pipeCreateId = window.setInterval(function(){
+    var pipe = new Box();
+    pipe.addClass('pipe');
+    pipe.setDimension(30,150);
+    pipe.setLeft(900);
+    pipe.element.style['background'] = 'blue';
     
-    var pipe = document.createElement('div');
-    pipe.style['width'] = 30+'px';
-    pipe.style['height'] = 150+'px';
-    pipe.style['background'] = 'blue';
-    pipe.style['position'] = 'absolute';
-//    pipe.style['top'] = 0+'px';
-    pipe.style['left'] = 900+'px';
-
-
-    var pipe1 = document.createElement('div');
-    pipe1.style['width'] = 30+'px';
-    pipe1.style['height'] = 50+'px';
-    pipe1.style['background'] = 'blue';
-    pipe1.style['position'] = 'absolute';
-//    pipe1.style['bottom'] = 0+'px';
-    pipe1.style['left'] = 900+'px';
+    var pipe1 = new Box();
+    pipe1.addClass('pipe');
+    pipe1.setDimension(30,50);
+    pipe1.setLeft(900);
+    pipe1.element.style['background'] = 'blue';
     
     if(count%2==0){
-        pipe.style['top'] = 0+'px';
-        pipe1.style['bottom'] = 0+'px';
+        pipe.setTop(0);
+        pipe1.setTop(actualHeight-pipe1.height);
     
         pipes.push(pipe);
         pipes.push(pipe1);
-        mainContainer.appendChild(pipe);
-        mainContainer.appendChild(pipe1);
+        pipe.appendTo(mainContainer);
+        pipe1.appendTo(mainContainer);
     }else{
-        pipe1.style['top'] = 0+'px';
-        pipe.style['bottom'] = 0+'px';
+        pipe.setTop(actualHeight-pipe.height);
+        pipe1.setTop(0);
+        
         pipes.push(pipe1);
         pipes.push(pipe);
-        mainContainer.appendChild(pipe1);
-        mainContainer.appendChild(pipe);
+        pipe1.appendTo(mainContainer);
+        pipe.appendTo(mainContainer);
     }
     
     count++;
@@ -115,14 +105,13 @@ mainContainer.onkeydown = function(e){
 }
 
 mainContainer.onmousedown = function(e){
-    console.log('mouse down');
-    if(heroTop>=0){
-        var tempTop = heroTop;
+    if(hero.y>=0){
+        var tempTop = hero.y;
         var inc = 40;
         var interval = window.setInterval(function(){
-            heroTop-=1; 
-            hero.style['top'] = heroTop+'px';    
-            if(heroTop< tempTop-inc || heroTop<=0){
+            hero.y-=1; 
+            hero.element.style['top'] = hero.y+'px';    
+            if(hero.y< tempTop-inc || hero.y<=0){
                 window.clearInterval(interval)
             }
         },5)
@@ -130,25 +119,20 @@ mainContainer.onmousedown = function(e){
     
 }
 
+function dead(){
+    var newDiv = document.createElement('div');
+    newDiv.style['width'] = '200px';
+    newDiv.style['height'] = '100px';
+    newDiv.style['background'] = 'red'
+    newDiv.innerHTML = "OUT";
+    newDiv.style['text-align']='center';
+    newDiv.style['line-height']='100px';
+    newDiv.style['font-size']='xx-large';
+    newDiv.style['position'] = 'absolute';
+    newDiv.style['top'] = (300/2 - 100/2) +'px';
+    newDiv.style['left'] = (800/2-300/2) +'px';
+    mainContainer.appendChild(newDiv);
 
-function hitTest(){
-        var x1 = box.x;
-        var y1 = box.y;
-        var width1 = box.width;
-        var height1 = box.height;
-        
-		var x = this.x;
-        var y = this.y;
-        var width = this.width;
-        var height = this.height;
-
-		if (x <x1 + width1 && x + width > x1 && y<(y1 + height1) && (height + y)>y1) {
-            // collision detected!
-
-	    } else {
-	        // no collision
-//	         console.log('no collision');
-	    }
-		
-	}
-
+    window.clearInterval(intervalId);
+    window.clearInterval(pipeCreateId);
+}
