@@ -4,7 +4,7 @@ window.onload = function(){
     var body = document.getElementsByTagName('body')[0];
     var mainContainer = document.getElementsByClassName('main-container')[0];
     var bgContainer = document.getElementsByClassName('bg-container')[0];
-
+    
     var hero = new Box();
     hero.addClass('hero');
     hero.setPos(100,140);
@@ -15,11 +15,10 @@ window.onload = function(){
     var actualHeight = 300;
     var maxWidth = 900-hero.width;
     var maxHeight = 300-hero.height;
-
+    
     var pipeCreateId;
 
     var gravity = 1;
-
 
     var intervalId = window.setInterval(function(){
         
@@ -32,7 +31,7 @@ window.onload = function(){
             
             if(pipes[pipeIndex].x<=0){
                 pipes[pipeIndex].element.remove();
-    //            pipes.splice(pipeIndex,1);
+                pipes.splice(pipeIndex,1);
             }else{
                 pipes[pipeIndex].x -=5;
                 pipes[pipeIndex].element.style['left'] = pipes[pipeIndex].x +'px';
